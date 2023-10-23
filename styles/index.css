@@ -1,0 +1,68 @@
+@font-face {
+  font-family: 'Martian Grotesk';
+  font-display: swap;
+  src: url('https://cdn.evilmartians.com/front/fonts/MartianGrotesk-1.0.woff2') format('woff2');
+  font-weight: 100 1000; /* Th: 100, xLt: 200, Lt: 300, Rg: 400, Md: 500, (no 600), Bd: 700, xBd: 800, Bl: 900, Ult: 1000 */
+  font-stretch: 75% 200%; /* Cn: 75%,  Nr: 87.5%,  Std: 100%,  sWd: 112.5%,  Wd: 125%,  xWd: 150%,  uWd: 200% */
+}
+
+@font-face {
+  font-family: 'Martian Mono';
+  font-display: swap;
+  src: url('https://cdn.evilmartians.com/front/fonts/MartianMono-1.0.0.woff2') format('woff2');
+  font-weight: 100 800; /* Th: 100, xLt: 200, Lt: 300, Rg: 400, Md: 500, (no 600), Bd: 700, xBd: 800 */
+  font-stretch: 75% 112.5%; /* Cn: 75%,  Nr: 87.5%,  Std: 100%,  sWd: 112.5% */
+}
+
+.slidev-layout {
+  --slidev-code-font-family: "Martian Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --color-kaigionrails: #9A0000;
+
+  &:not(.cover) {
+    h1, h2 {
+      margin-bottom: 1em;
+    }
+  }
+}
+
+code, kbd, samp, pre {
+  font-family: var(--slidev-code-font-family);
+}
+
+.annotated-list ul li p:first-child {
+  margin-bottom: 0.5rem;
+}
+
+.annotated-list ul li p:not(:first-child) {
+  margin-top: 0.5rem;
+  font-size: 90%;
+  color: gray;
+}
+
+.scaled-image, .scaled-image img, .scaled-image svg {
+  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.slidev-layout a.border-none,
+.slidev-layout a.hover\:border-none:hover {
+  border: none;
+}
+
+.dark .slidev-layout {
+  color: rgba(255,255,255,var(--un-text-opacity));
+  background: #0d0f15;
+  --prism-background: #1b1b1bab;
+}
+
+.shiki-dark {
+  background: #1b1b1bab !important;
+}
+
+.slidev-code {
+  font-size: inherit !important;
+  line-height: inherit !important;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
