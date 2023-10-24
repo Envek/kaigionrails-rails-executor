@@ -31,15 +31,20 @@ mdc: true
 the border between application and framework code
 
 
-<div class="absolute bottom-0 left-0 w-full px-10 py-8 grid grid-cols-2 justify-items-stretch items-end gap-4">
+<div class="absolute bottom-0 left-0 w-full px-14 py-8 flex justify-between items-end gap-4">
   <div class="text-left text-xl">
     Andrey Novikov, Evil Martians<br />
     <small><a href="https://kaigionrails.org/2023/">Kaigi on Rails 2023</a></small><br />
     <small><time datetime="2023-10-27">27 October 2023</time></small>
   </div>
 
+  <div class="flex gap-4">
   <div class="w-28 h-28 scaled-image justify-self-end">
     <a href="https://evilmartians.com/"><img alt="Evil Martians" src="/images/01_Evil-Martians_Logo_v2.1_RGB.svg" class="block dark:hidden" /><img alt="Evil Martians" src="/images/02_Evil-Martians_Logo_v2.1_RGB_for-Dark-BG.svg" class="hidden dark:block" /></a>
+  </div>
+  <div class="w-28 h-28 scaled-image justify-self-end">
+    <a href="https://kaigionrails.org/2023/"><img alt="Kaigi on Rails 2023" src="/images/kaigionrails2023_logo_rgb.svg" class="block" /></a>
+  </div>
   </div>
 </div>
 
@@ -65,17 +70,17 @@ Hi, I'm Andrey (アンドレイ){class="text-xl"}
 
 - Writing Ruby, Go, and whatever
 
-  SQL, Dockerfiles, TypeScript, bash…
+  <small>SQL, Dockerfiles, TypeScript, bash…</small>
 
 - Love open-source software
 
-  Created and maintaining a few Ruby gems
+  <small>Created and maintaining a few Ruby gems</small>
 
 - Living in Japan for 1 year already
 
 - Driving a moped
 
-  And also a bicycle to get kids to kindergarten
+  <small>And also a bicycle to get kids to kindergarten</small>
 
 <div class="text-center absolute bottom-0">
 <img src="/images/01_Evil-Martians_Logo_Lurkers_v2.0_on-Transparent.png" class="max-w-25% scaled-image mx-auto" />
@@ -88,9 +93,12 @@ Hi, I'm Andrey (アンドレイ){class="text-xl"}
 ---
 
 <a href="https://evilmartians.com/?utm_source=kaigionrails&utm_medium=slides&utm_campaign=postgresql-as-seen-by-rubyists">
-<img alt="Evil Martians" src="/images/01_Evil-Martians_Logo_v2.1_RGB.svg" class="block dark:hidden object-contain text-center m-auto max-h-112" />
-<img alt="Evil Martians" src="/images/02_Evil-Martians_Logo_v2.1_RGB_for-Dark-BG.svg" class="hidden dark:block object-contain text-center m-auto max-h-112" />
+<img alt="Evil Martians" src="/images/01_Evil-Martians_Logo_v2.1_RGB.svg" class="block dark:hidden object-contain text-center m-auto max-h-100" />
+<img alt="Evil Martians" src="/images/02_Evil-Martians_Logo_v2.1_RGB_for-Dark-BG.svg" class="hidden dark:block object-contain text-center m-auto max-h-100" />
 <p class="text-2xl text-center">evilmartians.com</p>
+</a>
+<a href="https://evilmartians.jp/?utm_source=kaigionrails&utm_medium=slides&utm_campaign=postgresql-as-seen-by-rubyists">
+<p class="text-xl text-center">🇯🇵 evilmartians.jp 🇯🇵</p>
 </a>
 <div class="absolute bottom-32px left-32px rotate-10 text-2xl">邪悪な火星人？</div>
 <div class="absolute bottom-32px right-32px rotate-350 text-2xl">イービルマーシャンズ！</div>
@@ -110,50 +118,50 @@ Hi, I'm Andrey (アンドレイ){class="text-xl"}
 <div class="grid grid-cols-4 grid-rows-2 gap-4">
   <a href="https://github.com/yabeda-rb/yabeda">
     <figure>
-      <img alt="Yabeda" src="/images/martian-oss/yabeda.svg" class="scaled-image h-40 mx-auto" />
+      <img alt="Yabeda" src="/images/martian-oss/yabeda.svg" class="scaled-image h-36 mx-auto" />
       <figcaption>Yabeda: Ruby application instrumentation framework</figcaption>
     </figure>
   </a>
   <a href="https://github.com/evilmartians/lefthook">
     <figure>
-      <img alt="LeftHook" src="/images/martian-oss/lefthook.svg" class="scaled-image h-40 mx-auto" />
+      <img alt="LeftHook" src="/images/martian-oss/lefthook.svg" class="scaled-image h-36 mx-auto" />
       <figcaption>Lefthook: git hooks manager</figcaption>
     </figure>
   </a>
   <a href="https://anycable.io/">
     <figure>
-      <img alt="AnyCable" src="/images/martian-oss/anycable.svg" class="scaled-image h-40 mx-auto" />
-      <figcaption>AnyCable: Polyglot replacement for ActionCable server</figcaption>
+      <img alt="AnyCable" src="/images/martian-oss/anycable.svg" class="scaled-image h-36 mx-auto" />
+      <figcaption>AnyCable: a real-time server for Rails and beyound</figcaption>
     </figure>
   </a>
   <a href="https://postcss.org/">
     <figure>
-      <img alt="PostCSS" src="/images/martian-oss/postcss.svg" class="scaled-image h-40 mx-auto" />
+      <img alt="PostCSS" src="/images/martian-oss/postcss.svg" class="scaled-image h-36 mx-auto" />
       <figcaption>PostCSS: A tool for transforming CSS with JavaScript</figcaption>
     </figure>
   </a>
   <a href="https://imgproxy.net/">
     <figure>
-      <img alt="Imgproxy" src="/images/martian-oss/imgproxy-light.svg" class="scaled-image h-40 mx-auto block dark:hidden" />
-      <img alt="Imgproxy" src="/images/martian-oss/imgproxy-dark.svg" class="scaled-image h-40 mx-auto hidden dark:block" />
+      <img alt="Imgproxy" src="/images/martian-oss/imgproxy-light.svg" class="scaled-image h-36 mx-auto block dark:hidden" />
+      <img alt="Imgproxy" src="/images/martian-oss/imgproxy-dark.svg" class="scaled-image h-36 mx-auto hidden dark:block" />
       <figcaption>Imgproxy: Fast and secure standalone server for resizing and converting remote images</figcaption>
     </figure>
   </a>
   <a href="https://github.com/evilmartians/figma-polychrom">
     <figure>
-      <img alt="Polychrom" src="/images/martian-oss/polychrom.svg" class="scaled-image h-40 mx-auto block dark:hidden" />
+      <img alt="Polychrom" src="/images/martian-oss/polychrom.svg" class="scaled-image h-36 mx-auto block dark:hidden" />
       <figcaption>A Figma plugin that ensures UI text is readable by leveraging the new APCA algorithm</figcaption>
     </figure>
   </a>
   <a href="https://github.com/DarthSim/overmind">
     <figure>
-      <img alt="Overmind" src="/images/martian-oss/overmind.svg" class="scaled-image h-40 mx-auto" />
+      <img alt="Overmind" src="/images/martian-oss/overmind.svg" class="scaled-image h-36 mx-auto" />
       <figcaption>Overmind: Process manager for Procfile-based applications and tmux </figcaption>
     </figure>
   </a>
   <a href="https://evilmartians.com/oss">
     <figure>
-      <div class="h-40 text-2xl flex items-center justify-center">
+      <div class="h-36 text-2xl flex items-center justify-center">
         <qr-code-vue value="https://evilmartians.com/oss" class="scaled-image w-full h-full mx-auto p-4" render-as="svg" margin="1" />
       </div>
       <figcaption style="font-size: 1rem; margin-top: 0; line-height: 1.25rem;">Even more at evilmartians.com/oss</figcaption>
@@ -210,13 +218,11 @@ use ActionDispatch::HostAuthorization
 use Rack::Sendfile
 use ActionDispatch::Static
 use ActionDispatch::Executor # Spoiler alert!
-use ActionDispatch::ServerTiming
-use ActiveSupport::Cache::Strategy::LocalCache::Middleware
 use Rack::Runtime
 use ActionDispatch::RequestId
 use ActionDispatch::RemoteIp
 use Rails::Rack::Logger
-# 16 entries skipped
+# 18 entries skipped
 run MyApp::Application.routes
 ```
 
@@ -226,28 +232,48 @@ A long way to serve a request!
 
 ## Two worlds
 
- - Framework code (and gems’ code also)
- - Your application code
+<div class="text-xl my-8">
+
+ - **Framework code** (and gems’ code also)
+ - Your **application code**
+
+</div>
 
 And for basic actions a lot more framework code is executed than your code.
+
+<hr class="my-8">
+
+It can be compared to a kernel and user space in an operating system.
+
+ - Kernel code manages resources and provides APIs
+ - User space code is executed by, and uses APIs provided by kernel
 
 ---
 
 ## What we take for granted
 
+<Transform scale="1.2">
+
  1. Automatic code reloading in development
  2. Implicit database connection management
- 3. … 
+ 3. Caches cleanup
+ 4. …
+
+</Transform>
 
 ---
 
 ## Code reloading
+
+<Transform scale="1.2">
 
 It should be fast or developer experience will be bad.
 
 And framework and gems usually doesn't change at all.
 
 So only application code need to be reloaded.
+
+</Transform>
 
 ---
 
@@ -290,7 +316,9 @@ end
 
 ## Why I should care?
 
-You should not!{class="text-2xl"}
+Usually, you should not!{class="text-2xl mt-16"}
+
+<hr class="my-8">
 
 That's why we love Ruby on Rails.
 
@@ -306,19 +334,33 @@ When you are writing a gem that _calls_ application code.
 
 ## Examples of gems that call application code
 
+<Transform scale="1.2" class="mt-16">
+
 - Background jobs: Sidekiq, DelayedJob, GoodJob…
 - Scheduled jobs: Whenever, …
 - Non-HTTP handlers: ActionCable, AnyCable…
 - Custom instrumentation: Yabeda…
 - Messaging: NATS subscriptions, Karafka consumers, …
 
+</Transform>
+
 ---
-layout: footnote
+layout: section
 ---
 
 # Rails Executor
 
-<Transform scale="1.25">
+**Border point** between application and framework code
+
+Or API to call application code from framework code
+
+---
+layout: footnote
+---
+
+## Rails Executor
+
+<Transform scale="1.2">
 
 - Wraps _unit of work_ (action, job, etc.)
 
@@ -326,11 +368,13 @@ layout: footnote
 
   <small>safe to call wrap inside of another wrap and  from different threads</small>
 
-- Defines callbacks
+- Defines callbacks `to_run` and `to_complete`
 
-  <small>called before or after enclosed block</small>
+  <small>called before and after enclosed block</small>
 
+<p class="mt-4 px-4 py-2 border-2 border-blue-500 float-left">
 Use it when you need to call application code once.
+</p>
 
 </Transform>
 
@@ -346,17 +390,21 @@ layout: footnote
 
 ## Rails Reloader
 
-<Transform scale="1.25">
+<Transform scale="1.2">
 
 - Wraps _unit of work_ too
 
-- Calls Executor if needed
+- Calls Executor if needed (its callbacks are executed)
 
 - Reloads code if changed
 
-- Adds more callbacks called only on code reload
+- Adds more callbacks (called only on code reload!)
 
+  <small>`to_prepare`, `to_run`, `to_complete`, `before_class_unload`, `after_class_unload`</small>
+
+<p class="mt-4 px-4 py-2 border-2 border-blue-500 float-left">
 Use it in long running processes instead of Executor
+</p>
 
 </Transform>
 
@@ -370,7 +418,9 @@ Read more: [guides.rubyonrails.org/threading_and_code_execution.html](https://gu
 
 ## How to integrate with Rails Executor
 
-Just wrap the palce that calls application code in `Rails.application.executor.wrap` or `Rails.application.reloader.wrap`:
+**Case 1**: to call application code from a gem code.
+
+Wrap the call to application code in `Rails.application.executor.wrap` or `Rails.application.reloader.wrap`:
 
 ```ruby
 Rails.application.reloader.wrap do
@@ -382,9 +432,27 @@ And that's it!{class="text-2xl"}
 
 ---
 
+## How to integrate with Rails Executor
+
+**Case 2**: to do something before/after request/job/etc.
+
+Use `to_run` and `to_complete` callbacks:
+
+```ruby
+Rails.application.executor.to_run do
+  # do something before
+end
+
+Rails.application.executor.to_complete do
+  # do something after
+end
+```
+
+---
+
 ## So all aforementioned gems are doing it?
 
-YES!{class="text-2xl mb-4"}
+<p class="text-5xl absolute top-100px right-200px rotate-10 animate-pulse text-green-500 p-4 border-3 border-green-500 font-black">YES!</p>
 
 E.g. see how Sidekiq does it:
 
@@ -401,6 +469,25 @@ E.g. see how Sidekiq does it:
   See [`lib/sidekiq/config.rb:33`](https://github.com/sidekiq/sidekiq/blob/7f83b2afca8fdfff87ebbb1742826e4fd9887be0/lib/sidekiq/config.rb#L33)
 
 - And you can write and provide your own!
+
+---
+layout: footnote
+footnote-class: text-sm
+---
+
+## Rails itself uses it too <small>(of course!)</small>
+
+ActionCable wraps every incoming WebSocket connection into Rails Executor:
+
+<iframe class="speakerdeck-iframe max-h-80 max-w-136 my-8" style="border: 0px; background: rgba(0, 0, 0, 0.1) padding-box; padding: 0px; border-radius: 6px; box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 40px; width: 100%; height: auto; aspect-ratio: 560 / 315;" frameborder="0" src="https://speakerdeck.com/player/1b44a2be77c242d2b55b7e43a981dda9?slide=58" title="[RailsWorld 2023] Untangling cables &amp; demystifying twisted transistors" allowfullscreen="true" data-ratio="1.7777777777777777"></iframe>
+
+<Arrow x1="900" y1="250" x2="555" y2="250" />
+
+::footnote::
+
+See [RailsWorld 2023: Untangling cables & demystifying twisted transistors](https://speakerdeck.com/palkan/railsworld-2023-untangling-cables-and-demystifying-twisted-transistors?slide=58)
+
+<qr-code url="https://speakerdeck.com/palkan/railsworld-2023-untangling-cables-and-demystifying-twisted-transistors?slide=58" caption="Action Cable Executor slide" class="w-42 absolute bottom-10px right-10px" />
 
 ---
 layout: footnote
@@ -429,6 +516,33 @@ See [nats-pure.rb pull request № 120](https://github.com/nats-io/nats-pure.rb/
 
 <qr-code url="https://github.com/nats-io/nats-pure.rb/pull/120" caption="nats-pure.rb pull request № 120" class="w-42 absolute bottom-10px right-10px" />
 
+---
+layout: footnote
+---
+
+## Typical example: resource management
+
+[ActionPolicy](https://actionpolicy.evilmartians.io/) gem caches authorization rules in a per-thread cache.
+
+```ruby{3-6}
+module ActionPolicy
+  class Railtie < ::Rails::Railtie
+    initializer "action_policy.clear_per_thread_cache" do |app|
+      app.executor.to_run { ActionPolicy::PerThreadCache.clear_all }
+      app.executor.to_complete { ActionPolicy::PerThreadCache.clear_all }
+    end
+  end
+end
+```
+
+Rails Executor cleans up this cache between requests.
+
+::footnote::
+
+See [`lib/action_policy/railtie.rb:59`](https://github.com/palkan/action_policy/blob/8204e9b82f2767728dce69fccb5c4b2088c532ec/lib/action_policy/railtie.rb#L59-L62)
+
+<qr-code url="https://github.com/palkan/action_policy/blob/8204e9b82f2767728dce69fccb5c4b2088c532ec/lib/action_policy/railtie.rb#L59-L62" caption="action_policy/railtie.rb:59" class="w-42 absolute bottom-10px right-10px" />
+
 
 ---
 layout: footnote
@@ -455,6 +569,27 @@ Less network round-trips, guaranteed order of messages.
 See [anycable-rails pull request № 189](https://github.com/anycable/anycable-rails/pull/189)
 
 <qr-code url="https://github.com/anycable/anycable-rails/pull/189" caption="anycable-rails pull request № 189" class="w-42 absolute bottom-10px right-10px" />
+
+---
+layout: footnote
+---
+
+## Advanced usage: ViewComponent previews
+
+Use Reloader `to_prepare` callback to show actual [Source Previews](https://viewcomponent.org/guide/previews.html#source-previews) of components in development.
+
+```ruby
+app.config.to_prepare do
+  # Clear source code cache on code reload
+  MethodSource.instance_variable_set(:@lines_for_file, {})
+end
+```
+
+::footnote::
+
+See [view_component pull request № 1147](https://github.com/ViewComponent/view_component/pull/1147)
+
+<qr-code url="https://github.com/ViewComponent/view_component/pull/1147" caption="view_component pull request № 1147" class="w-42 absolute bottom-10px right-10px" />
 
 ---
 layout: section
