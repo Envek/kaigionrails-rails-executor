@@ -54,7 +54,13 @@ the border between application and framework code
   }
 </style>
 
-<!-- 皆さん、こんにちは！ -->
+<!--
+皆さん、こんにちは！
+
+今日はあまり知られていないRailsの内部詳細について話したいです。通常のRailsアプリケーション開発者には見えない、Rails Executorというものです。
+
+Hey everyone, let's talk about one for not very well known Rails internals, that lays a bit beyound the world, observable by an application developer, Rails Executor.
+-->
 
 ---
 layout: image-right
@@ -87,7 +93,13 @@ Hi, I'm Andrey (アンドレイ){class="text-xl"}
 </div>
 
 <!--
-はじめまして、アンドレイと申します。もう一年以上大阪の近くに住んでいます。
+アンドレイと申します。バックエンドエンジニアで、RubyやGoを使っています。オープンソースの大ファンで、いくつかのRubyのジェムを作りました。
+
+もう一年以上大阪の近くに住んでいて、家族と一緒に日本のくらしを楽しんでいます。
+
+よろしくお願いします！
+
+I'm Andrey, back-end engineer at Evil Martians. I and my family are living in Japan for 1 year already, just a bit north of Osaka.
 -->
 
 ---
@@ -108,7 +120,15 @@ Hi, I'm Andrey (アンドレイ){class="text-xl"}
 
 真面目に言うと、「イービル・マーシャンズ」という会社に勤めています。
 
-我々はスタートアップや大企業のためにプロジェクトを開発したり、コンサルティングしたりしています。バックエンドをもちろん、フロントエンドやデザインも含めてプロダクトをターンキー開発しています。
+我々は開発者ツールのスタートアップと協力して、それらのスタートアップをユニコーンに変え、素晴らしいオープンソースも開発します。いろいろなスタートアップや大企業にコンサルティングもしています。バックエンドをもちろん、フロントエンドやデザインも含めてプロダクトをターンキー開発しています。
+
+イービル・マーシャンズは元々に Ruby on Rails 開発ショップとして知られてきましたが、それをはるかに超えています。
+
+Also I'm not only an alien, but also a martian. We came to Earth in peace.
+
+We work with growth stage startups focusing on developer tools. To transform those startups into unicorns, build amazing products, and create awesome open source products.
+
+Evil Martians is a team of senior developers and designers who know the industry really well. Historically we've been known as a Ruby on Rails development shop, but we go much beyond that.
 -->
 
 ---
@@ -181,6 +201,8 @@ Hi, I'm Andrey (アンドレイ){class="text-xl"}
 
 <!--
 それに、我々はオープンソースの大ファンなので、できる限りオープンソースソフトウェアを使ったり、貢献したり、そしてよく自分のライブラリやプロダクトを作って維持しています。このスライドでは一番有名なものですが、今は火星で作ったオープンソースプロジェクトが数十のものが存在しています。どうぞ自由に使ってください。
+
+One of our pillars is open source. We use open source products, and we create our own. And most probably there is a gem or two in your application Gemfile as well! Here is just a small part of our open source projects, but you can find much more at our website.
 -->
 
 ---
@@ -190,6 +212,14 @@ layout: section
 # The border
 
 Why we need to distinguish between application and framework code?
+
+<!--
+
+では、今日の話に入りましょう。なぜアプリケーションコードとフレームワークコードを区別する必要があるのでしょうか？
+
+But let's get to the topic! Have you ever asked yourself why we need to distinguish between application and framework code?
+
+-->
 
 ---
 
@@ -206,6 +236,13 @@ class KaigiOnRailsController < ApplicationController
   # framework code executes after action
 end
 ```
+
+<!--
+
+Rails アプリケーションの最小限の部分を見てみましょう。これはコントローラのアクションです。そして、これは空でも大丈夫で、自動的にビューをレンダリングします。設定より規約が優先の影で簡潔性のことは、私たちがRailsが大好きの理由の一つです。
+
+Let's take a look at minimal piece of a Ruby on Rails application. It is a controller action, and sometimes it can be absolutely empty, rendering some view template automatically. That's one of the reason why we love Ruby on Rails: its conciseness.
+-->
 
 ---
 
@@ -228,6 +265,17 @@ run MyApp::Application.routes
 
 A long way to serve a request!
 
+<!--
+
+もちろん、魔法だと見えても、魔法ではないんです。自分でコードを書く必要がないことは、フレームワークのコードがそれをやってくれるということです。
+
+Railsが遅いと文句を言う人がいますが、そうではありません。それはあなたのために多くの作業を行っているだけです。したがって、生産性を高めることができます。
+
+However, there are no magic. If you don't write code to do the job, that means that framework has to have that code.
+
+And people sometimes can complain that Rails is slow. But it is not. It is just doing a lot of work behind the scenes for you. So you can be productive.
+-->
+
 ---
 
 ## Two worlds
@@ -248,6 +296,17 @@ It can be compared to a kernel and user space in an operating system.
  - Kernel code manages resources and provides APIs
  - User space code is executed by, and uses APIs provided by kernel
 
+<!--
+
+ですので、それにRubyもRailsも開発者の生産性を重視していることで、ほとんどの場合、特に単純なアクションの場合、アプリのコードよりもはるかに多くのフレームワークコードが実行されるという状況が発生します。
+
+これは、オペレーティング システムのカーネルとユーザー空間によく似ています。 カーネルコードはリソースを管理し、実装の詳細を隠すため、ユーザー空間プログラムはsyscallを呼び出すだけでよく、実装方法は気にしません。
+
+And this, and also the focus of both Ruby and Rails on developer productivity, leads to a situation when in most cases, especially for simpler actions, there is a lot more framework code executed than your code.
+
+It is very much like a kernel and user space in an operating system. Kernel code manages resources and hides implementation details, so user space program can just call syscalls and don't care about how it is implemented.
+-->
+
 ---
 
 ## What we take for granted
@@ -257,9 +316,17 @@ It can be compared to a kernel and user space in an operating system.
  1. Automatic code reloading in development
  2. Implicit database connection management
  3. Caches cleanup
- 4. …
+ 4. and more…
 
 </Transform>
+
+<!--
+
+Railsはあなたのために多くの仕事をしてくれます。 私たちが当たり前だと思っていることがたくさんあります。 たとえば、開発時のコードの自動再読み込みや、暗黙的なデータベース接続管理などのさまざま退屈なことです。
+
+And Rails does a lot of work for you. There is a lot of things that we take for granted. For example, automatic code reloading in development. Or implicit database connection management. Or caches cleanup. And so on.
+
+-->
 
 ---
 
@@ -274,6 +341,14 @@ And framework and gems usually doesn't change at all.
 So only application code need to be reloaded.
 
 </Transform>
+
+<!--
+
+開発者の生産性にとって主なことは、もちろん、開発中に変更されたコードの自動的な再読み込みのこと、再リロードです。高速である必要があります。そうしないと、開発者のエクスペリエンスが低下します。 また、フレームワークとジェムのコードが多数あるため、変更のたびにアプリケーション全体をリロードすることは受け入れられません。したがって、アプリケーションのコードのみをリロードする必要があります。
+
+Main thing for developer productivity is, of course, automatic reloading of changed code in development. It should be fast or developer experience will be bad. And as there is a lot of framework and gem code, it is not a good idea to reload the whole application on every change. So only application code, your code, need to be reloaded.
+
+-->
 
 ---
 
@@ -292,6 +367,12 @@ class KaigiOnRailsController < ApplicationController
 end
 ```
 
+<!--
+次に重要なことはリソース管理です。 接続プールやキャッシュのクリーンアップなどを気にする必要はありません。コードを記述するだけで機能します。
+
+Second most important thing is resource management. We don't have to care about connection pools, cleaning up caches, etc. We just write our code and it works.
+-->
+
 ---
 
 ## Resource management
@@ -299,18 +380,22 @@ end
 If we had to do it manually:
 
 ```ruby{4,7}
+# This is not real code!
 class KaigiOnRailsController < ApplicationController
-  # framework code executes before action
   def index
     ActiveRecord::Base.connection_pool.with_connection do |conn|
-      record = MyModel.find_by(…)
-      record.update(…)
+      record = MyModel.find_by(…, connection: conn)
+      record.update(…, connection: conn)
     end
   end
 end
 ```
 
 (Thanks to all possible gods we don't have to!)
+
+<!--
+もしかしたら、これを手動で行う必要があったら、次のようになります。非常に冗長で面倒で、生産性もなくなると思います。
+-->
 
 ---
 
@@ -324,11 +409,41 @@ That's why we love Ruby on Rails.
 
 And that's why there is Rails Executor.
 
+<!--
+
+アプリケーションを開発するなら、これについて知る必要さえありません。ただRailsを使用して、楽しんでください！
+
+What is best part of this? If all you do is writing application code, you don't even need to know about this! Just use Rails.
+-->
+
 ---
 
 ## But when I should care?
 
 When you are writing a gem that _calls_ application code.
+
+```ruby{3-5}
+class KaigiOnRailsController < ApplicationController
+  def index
+    MyGem.do_something_later do
+      # Your callback code here
+    end
+    # render something
+  end
+end
+```
+
+<!--
+ただし、アプリケーションコードを呼び出すジェムを作成したいとき、知る必要になります。
+
+もし、あなたの作成したジェムが、アプリからのコールバックを受け、保存して、いつか呼び出すようなものであれば、呼び出す前後にリソース管理を行わないと、厄介なバグの発生するおそれがあります。
+
+また、使っているツールの内部詳細を知ることは良いことですよね。これは、プロフェッショナルとして成長しに役くに立ちます。サードパーティのgemの問題をデバッグするにも役に立ちます。
+
+However, when you want to step out of comfort zone of application code and write a library for your application, a gem that will provide an API that accepts a callback with application code and eventually calls it. Now you'd better know about how to do it properly to avoid tricky bugs from happening.
+
+Also, it is a good thing to know internal details of tools you are using. It will help you to grow as a professional and debug issues in gems that was written by others.
+-->
 
 ---
 
@@ -344,6 +459,13 @@ When you are writing a gem that _calls_ application code.
 
 </Transform>
 
+
+<!--
+また、アプリケーションコードを呼び出すジェムの種類も数も多くあります。 バックグラウンド・ジョブ、cron ジョブ、メッセージング、などなど。
+
+And there is a lot of kinds of gems that may need to call application code. Background jobs, cron jobs, instrumentation, messaging.
+-->
+
 ---
 layout: section
 ---
@@ -353,6 +475,12 @@ layout: section
 **Border point** between application and framework code
 
 Or API to call application code from framework code
+
+<!--
+
+Welcome to Rails executor, the border point between application and framework code. API that allows you to travel back and forth between these two worlds.
+
+-->
 
 ---
 layout: footnote
@@ -384,6 +512,14 @@ Read more: [guides.rubyonrails.org/threading_and_code_execution.html](https://gu
 
 <qr-code url="https://railsguides.jp/threading_and_code_execution.html#executor" caption="Rails guides on threading (日本語)" class="w-42 absolute bottom-10px right-10px" />
 
+<!--
+
+Rails Executor wraps _unit of work_ of an applicatio: it can be controller action, background job, whatever. It defines callbacks `to_run` and `to_complete` that are called before and after enclosed block. That's it, that simple.
+
+But Executor handles only resource management, it doesn't reload code.
+
+-->
+
 ---
 layout: footnote
 ---
@@ -413,6 +549,10 @@ Use it in long running processes instead of Executor
 Read more: [guides.rubyonrails.org/threading_and_code_execution.html](https://guides.rubyonrails.org/threading_and_code_execution.html#reloader)
 
 <qr-code url="https://railsguides.jp/threading_and_code_execution.html#reloader" caption="Rails guides on threading (日本語)" class="w-42 absolute bottom-10px right-10px" />
+
+<!--
+For that purpose there is a separate Rails Reloader which actually wraps Executor. It also reloads code before every unit of work.
+-->
 
 ---
 
