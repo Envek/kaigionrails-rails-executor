@@ -478,6 +478,8 @@ Or API to call application code from framework code
 
 <!--
 
+では、今日はRails Executorを紹介したいと思います。これは、アプリケーションコードとフレームワークコードの境界点です。 または、フレームワークコードからアプリケーションコードを呼び出すためのAPIです。
+
 Welcome to Rails executor, the border point between application and framework code. API that allows you to travel back and forth between these two worlds.
 
 -->
@@ -514,7 +516,15 @@ Read more: [guides.rubyonrails.org/threading_and_code_execution.html](https://gu
 
 <!--
 
-Rails Executor wraps _unit of work_ of an applicatio: it can be controller action, background job, whatever. It defines callbacks `to_run` and `to_complete` that are called before and after enclosed block. That's it, that simple.
+Rails Executorは「仕事の単位」を受けます。コントローラーのアクションもバックグラウンドジョブも全ては「仕事の単位」になります。アプリケーションコードのコールバックという意味です。
+
+このコールバックを実行する前に、Executorはto_runという自分のコールバックを実行してから、アプリケーションコードを呼び出して、その後にto_completeというコールバックを実行します。以上です、こんな簡単なものです。
+
+Executorに包まれたコードはもう一回Executorに包んでもかまいません、安全です。
+
+ただし、Executorはリソース管理を行いますが、コードの再読み込みは行いません。
+
+Rails Executor wraps _unit of work_ of an application: it can be controller action, background job, whatever. It defines callbacks `to_run` and `to_complete` that are called before and after enclosed block. That's it, that simple.
 
 But Executor handles only resource management, it doesn't reload code.
 
@@ -551,16 +561,23 @@ Read more: [guides.rubyonrails.org/threading_and_code_execution.html](https://gu
 <qr-code url="https://railsguides.jp/threading_and_code_execution.html#reloader" caption="Rails guides on threading (日本語)" class="w-42 absolute bottom-10px right-10px" />
 
 <!--
+
+Executorとともに、Rails Reloaderもあります。これは、Executorをラップして、アプリケーションコードを実行する前に、最新のコードが読み込まれているかを確実します。
+
+長時間実行されるプロセスでは、リソース管理だけでなくコードの再読み込みも行うために、ExecutorではなくReloaderを使用されるべきです。
+
 For that purpose there is a separate Rails Reloader which actually wraps Executor. It also reloads code before every unit of work.
+
+Long running processes should use Reloader instead of Executor, to get not only resource management, but also code reloading.
 -->
 
 ---
 
-## How to integrate with Rails Executor
+## How to integrate with Rails Executor/Reloader
 
 **Case 1**: to call application code from a gem code.
 
-Wrap the call to application code in `Rails.application.executor.wrap` or `Rails.application.reloader.wrap`:
+Wrap the call to application code in `Rails.application.executor.wrap` or, most often, `Rails.application.reloader.wrap`:
 
 ```ruby
 Rails.application.reloader.wrap do
@@ -570,13 +587,19 @@ end
 
 And that's it!{class="text-2xl"}
 
+<!--
+ジェムコードからアプリケーションコードを呼び出すとき、リソース管理とコードの再読み込みを行うには必要なのは、「仕事の単位」の呼び出しを「Rails.application.reloader.wrap」で包むだけです。簡単じゃないですか？
+
+To just call application code from your gem code to get resource management and code reloading, all you need is to wrap the call to a unit of work in `Rails.application.reloader.wrap` and that's it! Isn't it easy?
+-->
+
 ---
 
-## How to integrate with Rails Executor
+## How to integrate with Rails Executor/Reloader
 
-**Case 2**: to do something before/after request/job/etc.
+**Case 2**: to do something before/after every request/job/etc.
 
-Use `to_run` and `to_complete` callbacks:
+Register `to_run` and `to_complete` callbacks on the application *Executor* instance:
 
 ```ruby
 Rails.application.executor.to_run do
@@ -588,27 +611,47 @@ Rails.application.executor.to_complete do
 end
 ```
 
+<!--
+「仕事の単位」の前後にリソースを管理したい場合は、アプリケーションの Executorのインスタンスに `to_run` および `to_complete` コールバックを登録してください。
+
+If you want to do manage some resources before or after a unit of work, you can register `to_run` and `to_complete` callbacks on the application Executor instance.
+-->
+
+---
+
+## How to integrate with Rails Executor/Reloader
+
+**Case 3**: to do something before/after every code reload.
+
+Register `to_prepare` or other callbacks on the application *Reloader* instance:
+
+```ruby
+Rails.application.reloader.to_prepare do
+  # do something whe code has been reloaded
+end
+```
+
+<!--
+コードの再読み込みの前後に何かをしたい場合は、アプリケーションの Reloader のインスタンスに `to_prepare` またはその他のコールバックを登録してください。
+
+If you want to do something before or after code reload, you can register `to_prepare` or other callbacks on the application Reloader instance.
+-->
+
+---
+layout: statement
 ---
 
 ## So all aforementioned gems are doing it?
 
-<p class="text-5xl absolute top-100px right-200px rotate-10 animate-pulse text-green-500 p-4 border-3 border-green-500 font-black">YES!</p>
+<p class="text-5xl rotate-10 animate-pulse text-green-500 p-4 border-3 border-green-500 font-black mx-auto max-w-50 text-center">YES!</p>
 
-E.g. see how Sidekiq does it:
+<!--
 
-- Wraps every job execution to reloader
+前に述べた多くの、実際にはほとんどのジェムがアプリケーションコードを呼び出すためにRails Executorを使用していることを意味します。 これは、長時間実行されるプロセスが確実に動作するための前提条件です。
 
-  See [`lib/sidekiq/processor.rb:135`](https://github.com/sidekiq/sidekiq/blob/7f83b2afca8fdfff87ebbb1742826e4fd9887be0/lib/sidekiq/processor.rb#L135-L142)
+And it means that many, actually most of the gems I listed before are using Rails Executor/Reloader to call application code. It is a precondition for reliable work of long running processes.
 
-- In Rails app it calls Rails Executor/Reloader
-
-  See [`lib/sidekiq/rails.rb`](https://github.com/sidekiq/sidekiq/blob/7f83b2afca8fdfff87ebbb1742826e4fd9887be0/lib/sidekiq/rails.rb#L15-L17)
-
-- In non-Rails it is just a pass-through block
-
-  See [`lib/sidekiq/config.rb:33`](https://github.com/sidekiq/sidekiq/blob/7f83b2afca8fdfff87ebbb1742826e4fd9887be0/lib/sidekiq/config.rb#L33)
-
-- And you can write and provide your own!
+-->
 
 ---
 layout: footnote
@@ -628,6 +671,16 @@ ActionCable wraps every incoming WebSocket connection into Rails Executor:
 See [RailsWorld 2023: Untangling cables & demystifying twisted transistors](https://speakerdeck.com/palkan/railsworld-2023-untangling-cables-and-demystifying-twisted-transistors?slide=58)
 
 <qr-code url="https://speakerdeck.com/palkan/railsworld-2023-untangling-cables-and-demystifying-twisted-transistors?slide=58" caption="Action Cable Executor slide" class="w-42 absolute bottom-10px right-10px" />
+
+<!--
+もちろん、Rails 自体も Rails Executor を使用しています。 コントローラーのアクションもActiveJobもフレームワークのすべてのコンポーネントはアプリコードをExecutor軽油で呼び出します。 たとえば、ActionCableは、すべてのWebSocketのメッセージを処理する時は、チャンネルのアクションをExecutorにラップして呼び出します。
+
+Action Cable アーキテクチャに興味があったら、同僚の Vladimir Dementyev の今年のRailsWorldのトークをご覧ください。
+
+And of course Rails itself uses Rails Executor/Reloader too. For controller actions, for ActiveJob, for all components of the framework. For example, ActionCable wraps every incoming WebSocket connection into Rails Executor.
+
+If you are interested in Action Cable architecture, please watch a talk from my colleague Vladimir Dementyev at RailsWorld 2023 conference.
+-->
 
 ---
 layout: footnote
