@@ -796,6 +796,10 @@ See [view_component pull request № 1147](https://github.com/ViewComponent/view
 
 <qr-code url="https://github.com/ViewComponent/view_component/pull/1147" caption="view_component pull request № 1147" class="w-42 absolute bottom-10px right-10px" />
 
+<!--
+Reloaderの例として、ViewComponentのプレビュー機能を見てみましょう。Reloaderのコールバックを使って、開発環境では、ビューコンポーネントの使用方法のドキュメントを自動的に更新します。Developer Experienceの向上です。
+-->
+
 ---
 layout: statement
 ---
@@ -803,6 +807,10 @@ layout: statement
 ## There is always room for contribution
 
 Not all gems are integrated with Rails Executor/Reloader yet.
+
+<!--
+あいにく、まだすべてのジェムがRails Executorと統合されていません。しかし、あなたは助けることが出きるようになりました！　今、自分の経験について話したいと思います。
+-->
 
 ---
 
@@ -822,6 +830,12 @@ end
 - executes application code callback multiple times
 
 Nice to have automatic code reloading!
+
+<!--
+ある日、NATSというメッセージングシステムのRubyクライアントを使っていました。
+
+NATSは各サブスクリプションを作って、メッセージが届いたら、アプリからのコールバックを実行します。問題は、Executorを使いませんでした。そのため、データベースの接続が漏れて、切れてしまうというバグも可能ですし、コードの再読み込みも行いません。
+-->
 
 ---
 layout: footnote
@@ -857,12 +871,19 @@ See [nats-pure.rb pull request № 120](https://github.com/nats-io/nats-pure.rb/
 
 <qr-code url="https://github.com/nats-io/nats-pure.rb/pull/120" caption="nats-pure.rb pull request № 120" class="w-42 absolute bottom-10px right-10px" />
 
+<!--
+ですので、コールバックをRails Executorでラップしました。Sidekiqの実装を参考にして、フレームワークに依存しない「リローダー」も追加して、Railsのアプリでも、Railsのないアプリでも使えるようになりました。
+
+So I wrapped callback in Rails Executor. And to allow NATS client to be used outside of Rails, there is framework-agnostic “reloader” (I took it from Sidekiq implementation).
+-->
+
 ---
 layout: section
 ---
 
 # That’s it!
 
+<!-- これで今日は以上です。-->
 ---
 
 ## Up to the next time!
@@ -877,10 +898,8 @@ See you at Izumo Ruby meet-up on 2023-11-11!
 
 <qr-code url="https://evilmartians.com/events/kujira-ni-notta-ruby-izumorb" caption="Izumo Ruby meet-up talk announce" class="w-42 absolute bottom-10px right-10px" />
 
----
-
 <!--
-小さなアナウンスだけが残っています。私の次のトークは、二週間後、島根県出雲市の新しいミートアップイベントです。松江市に開催されるRubyWorldカンファレンスのすぐ直後です。RubyWorldの参加者の皆さん、ぜひ島根県にもう少し泊まって、出雲市に来て、新しい出雲Rubyミートアップイベントに参加してください。Martians流DockerとRailsの開発環境について話します。
+あと小さなアナウンスだけが残っています。私の次のトークは、二週間後、島根県出雲市の新しいミートアップイベントです。松江市に開催されるRubyWorldカンファレンスのすぐ直後です。RubyWorldの参加者の皆さん、ぜひ島根県にもう少し泊まって、出雲市に来て、新しい出雲Rubyミートアップイベントに参加してください。Martians流DockerとRailsの開発環境について話します。
 
 My next talk will be right after RubyWorld conference in Shimane. RubyWorld attendees, I invite you to stay in Shimane for a little bit longer and come to Izumo city to attend a brand new meetup event. I will talk about martian way of using Docker for local development environment of Rails applications.
 -->
