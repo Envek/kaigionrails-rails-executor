@@ -206,6 +206,30 @@ One of our pillars is open source. We use open source products, and we create ou
 -->
 
 ---
+
+## Index
+
+<Transform scale="1.2">
+
+ 1. The problem explanation
+
+ 2. What is Rails Executor
+
+ 3. How to use it
+
+ 4. Real world examples
+
+ 5. My experience with it
+
+</Transform>
+
+<!--
+では、今日の話に入りましょう。Rails Executor の背後にある問題とそのものの使い方について簡単に説明してから、実際の例と自分の経験について話したいと思います。
+
+But let's get to the topic! Today I want to briefly the problem behind Rails Executor, what it is, how to use it, show some real world examples, and tell you about my experience with it.
+-->
+
+---
 layout: section
 ---
 
@@ -215,15 +239,15 @@ Why we need to distinguish between application and framework code?
 
 <!--
 
-では、今日の話に入りましょう。なぜアプリケーションコードとフレームワークコードを区別する必要があるのでしょうか？
+なぜアプリケーションコードとフレームワークコードを区別する必要があるのでしょうか？
 
-But let's get to the topic! Have you ever asked yourself why we need to distinguish between application and framework code?
+Have you ever asked yourself why we need to distinguish between application and framework code?
 
 -->
 
 ---
 
-## What developer see
+## What developer sees
 
 ```ruby
 class KaigiOnRailsController < ApplicationController
@@ -246,7 +270,7 @@ Let's take a look at minimal piece of a Ruby on Rails application. It is a contr
 
 ---
 
-## What path it takes
+## What code actually executes
 
 ```sh
 $ rails middleware
@@ -334,11 +358,11 @@ And Rails does a lot of work for you. There is a lot of things that we take for 
 
 <Transform scale="1.2">
 
-It should be fast or developer experience will be bad.
+It should be fast or the developer experience will be bad.
 
 And framework and gems usually doesn't change at all.
 
-So only application code need to be reloaded.
+So only the application code need to be reloaded.
 
 </Transform>
 
@@ -686,33 +710,6 @@ If you are interested in Action Cable architecture, please watch a talk from my 
 layout: footnote
 ---
 
-## My contribution: NATS subscriptions
-
-NATS is a modern, simple, secure and performant message communications system for microservice world.
-
-```ruby
-nats = NATS.connect("demo.nats.io")
-
-nats.subscribe("service") do |msg|
-  # Your logic to handle incoming messages
-end
-```
-
-- runs in a long-running process
-- executes application code callback multiple times
-
-Nice to have automatic code reloading!
-
-::footnote::
-
-See [nats-pure.rb pull request № 120](https://github.com/nats-io/nats-pure.rb/pull/120)
-
-<qr-code url="https://github.com/nats-io/nats-pure.rb/pull/120" caption="nats-pure.rb pull request № 120" class="w-42 absolute bottom-10px right-10px" />
-
----
-layout: footnote
----
-
 ## Typical example: resource management
 
 [ActionPolicy](https://actionpolicy.evilmartians.io/) gem caches authorization rules in a per-thread cache.
@@ -736,6 +733,15 @@ See [`lib/action_policy/railtie.rb:59`](https://github.com/palkan/action_policy/
 
 <qr-code url="https://github.com/palkan/action_policy/blob/8204e9b82f2767728dce69fccb5c4b2088c532ec/lib/action_policy/railtie.rb#L59-L62" caption="action_policy/railtie.rb:59" class="w-42 absolute bottom-10px right-10px" />
 
+<!--
+現実のジェムはRails Executorをどのように使用しているかを見てみましょう。
+
+例えば、マーシャンズのジェムの一つ、ActionPolicyです。認可ルールをスレッドごとにキャッシュして、認可チェックを高速化します。ルールの結果が古くならないように、キャッシュをクリーンアップをRails Executorのコールバックとしてを登録します。
+
+Let's see how real world gems are using Rails Executor.
+
+ActionPolicy, martian gem for authorization, caches authorization rules in a per-thread cache to speed up authorization checks. Rails Executor cleans up this cache between requests to avoid stale results.
+-->
 
 ---
 layout: footnote
@@ -763,6 +769,12 @@ See [anycable-rails pull request № 189](https://github.com/anycable/anycable-r
 
 <qr-code url="https://github.com/anycable/anycable-rails/pull/189" caption="anycable-rails pull request № 189" class="w-42 absolute bottom-10px right-10px" />
 
+<!--
+より高度な例:最新のAnyCableでは、自動メッセージ バッチ処理。 リクエスト中またはバックグラウンド・ジョブ中に送信されたメッセージは、クライアントにすぐに送信されるのではなく、すべて蓄積され、仕事の単位の実行が完了した後に送信されます。これにより、性能も向上し、メッセージの順序が保証されます。
+
+Less typical example: automatic message batching in newer versions of AnyCable. All messages sent during request or background job aren't sent to clients immediately, but instead accumulated and sent only after unit of work was completed its execution. It allows to increase throughput and guarantee order of messages.
+-->
+
 ---
 layout: footnote
 ---
@@ -785,6 +797,67 @@ See [view_component pull request № 1147](https://github.com/ViewComponent/view
 <qr-code url="https://github.com/ViewComponent/view_component/pull/1147" caption="view_component pull request № 1147" class="w-42 absolute bottom-10px right-10px" />
 
 ---
+layout: statement
+---
+
+## There is always room for contribution
+
+Not all gems are integrated with Rails Executor/Reloader yet.
+
+---
+
+## My contribution: NATS subscriptions
+
+NATS is a modern, simple, secure and performant message communications system for microservice world.
+
+```ruby
+nats = NATS.connect("demo.nats.io")
+
+nats.subscribe("service") do |msg|
+  # Your logic to handle incoming messages
+end
+```
+
+- runs in a long-running process
+- executes application code callback multiple times
+
+Nice to have automatic code reloading!
+
+---
+layout: footnote
+---
+
+## My contribution: NATS subscriptions
+
+Need to wrap subscription message handler in `Rails.application.reloader.wrap`:
+
+```diff
+-begin
++client.reloader.call do
+  callback.call(message)
+```
+
+<small>
+
+To allow NATS client to be used outside of Rails, there is framework-agnostic “reloader” (as Sidekiq does).
+
+```ruby
+class NATS::Rails < ::Rails::Engine
+  config.after_initialize do
+    NATS::Client.default_reloader = NATS::Rails::Reloader.new
+  end
+end
+```
+
+</small>
+
+::footnote::
+
+See [nats-pure.rb pull request № 120](https://github.com/nats-io/nats-pure.rb/pull/120)
+
+<qr-code url="https://github.com/nats-io/nats-pure.rb/pull/120" caption="nats-pure.rb pull request № 120" class="w-42 absolute bottom-10px right-10px" />
+
+---
 layout: section
 ---
 
@@ -803,6 +876,14 @@ Come to Izumo, Shimane, Japan!
 See you at Izumo Ruby meet-up on 2023-11-11!
 
 <qr-code url="https://evilmartians.com/events/kujira-ni-notta-ruby-izumorb" caption="Izumo Ruby meet-up talk announce" class="w-42 absolute bottom-10px right-10px" />
+
+---
+
+<!--
+小さなアナウンスだけが残っています。私の次のトークは、二週間後、島根県出雲市の新しいミートアップイベントです。松江市に開催されるRubyWorldカンファレンスのすぐ直後です。RubyWorldの参加者の皆さん、ぜひ島根県にもう少し泊まって、出雲市に来て、新しい出雲Rubyミートアップイベントに参加してください。Martians流DockerとRailsの開発環境について話します。
+
+My next talk will be right after RubyWorld conference in Shimane. RubyWorld attendees, I invite you to stay in Shimane for a little bit longer and come to Izumo city to attend a brand new meetup event. I will talk about martian way of using Docker for local development environment of Rails applications.
+-->
 
 ---
 
@@ -860,6 +941,6 @@ Our awesome blog: [evilmartians.com/chronicles](https://evilmartians.com/chronic
 
 最後までご視聴してくださって、ありがとうございました！
 
-我が社のブログでは、Rubyについての記事がたくさんあります。ぜひお読みください！日本語の翻訳もあります。
+我が社のブログでは、Rubyについての記事がたくさんありますので、ぜひお読みください！日本語の翻訳もあります。
 
 -->
