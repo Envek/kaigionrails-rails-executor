@@ -57,7 +57,7 @@ the border between application and framework code
 <!--
 皆さん、こんにちは！
 
-今日はあまり知られていないRailsの内部詳細について話したいです。通常のRailsアプリケーション開発者には見えない、Rails Executorというものです。
+今日はあまり知られていないRailsの内部の実装詳細について話したいです。通常のRailsアプリケーション開発者には見えないRails Executorというものです。
 
 Hey everyone, let's talk about one for not very well known Rails internals, that lays a bit beyound the world, observable by an application developer, Rails Executor.
 -->
@@ -93,7 +93,7 @@ Hi, I'm Andrey (アンドレイ){class="text-xl"}
 </div>
 
 <!--
-アンドレイと申します。バックエンドエンジニアで、RubyやGoを使っています。オープンソースの大ファンで、いくつかのRubyのジェムを作りました。
+自己紹介から始めます。アンドレイと申します。バックエンドエンジニアで、RubyやGoを使っています。オープンソースの大ファンで、いくつかのRubyのジェムを作りました。
 
 もう一年以上大阪の近くに住んでいて、家族と一緒に日本のくらしを楽しんでいます。
 
@@ -120,9 +120,9 @@ I'm Andrey, back-end engineer at Evil Martians. I and my family are living in Ja
 
 真面目に言うと、「イービル・マーシャンズ」という会社に勤めています。
 
-我々は開発者ツールのスタートアップと協力して、それらのスタートアップをユニコーンに変え、素晴らしいオープンソースも開発します。いろいろなスタートアップや大企業にコンサルティングもしています。バックエンドをもちろん、フロントエンドやデザインも含めてプロダクトをターンキー開発しています。
+我々は開発者ツールのスタートアップと協力して、それらのスタートアップをユニコーンに変え、素晴らしいオープンソースプロジェクトも開発します。いろいろなスタートアップや大企業にコンサルティングもしています。バックエンドをもちろん、フロントエンドやデザインも含めてプロダクトをターンキー開発しています。
 
-イービル・マーシャンズは元々に Ruby on Rails 開発ショップとして知られてきましたが、それをはるかに超えています。
+イービル・マーシャンズは元々に Ruby on Railsに集中する開発ショップとして知られてきましたが、今はそれをはるかに超えています。
 
 Also I'm not only an alien, but also a martian. We came to Earth in peace.
 
@@ -202,6 +202,8 @@ Evil Martians is a team of senior developers and designers who know the industry
 <!--
 それに、我々はオープンソースの大ファンなので、できる限りオープンソースソフトウェアを使ったり、貢献したり、そしてよく自分のライブラリやプロダクトを作って維持しています。このスライドでは一番有名なものですが、今は火星で作ったオープンソースプロジェクトが数十のものが存在しています。どうぞ自由に使ってください。
 
+そして、多分、皆さんのアプリでは我々が作ったジェムはいくつかあるとおもいます。
+
 One of our pillars is open source. We use open source products, and we create our own. And most probably there is a gem or two in your application Gemfile as well! Here is just a small part of our open source projects, but you can find much more at our website.
 -->
 
@@ -224,7 +226,7 @@ One of our pillars is open source. We use open source products, and we create ou
 </Transform>
 
 <!--
-では、今日の話に入りましょう。Rails Executor の背後にある問題とそのものの使い方について簡単に説明してから、実際の例と自分の経験について話したいと思います。
+では、話題に入りましょう。今日はRails Executorの背後にある問題とそのものの使い方について簡単に説明してから、実際の例と自分の経験について話したいと思います。
 
 But let's get to the topic! Today I want to briefly the problem behind Rails Executor, what it is, how to use it, show some real world examples, and tell you about my experience with it.
 -->
@@ -239,7 +241,7 @@ Why we need to distinguish between application and framework code?
 
 <!--
 
-なぜアプリケーションコードとフレームワークコードを区別する必要があるのでしょうか？
+いったい、なぜアプリケーションコードとフレームワークのコードを区別する必要があるのでしょうか？
 
 Have you ever asked yourself why we need to distinguish between application and framework code?
 
@@ -263,7 +265,7 @@ end
 
 <!--
 
-Rails アプリケーションの最小限の部分を見てみましょう。これはコントローラのアクションです。そして、これは空でも大丈夫で、自動的にビューをレンダリングします。設定より規約が優先の影で簡潔性のことは、私たちがRailsが大好きの理由の一つです。
+Rails アプリケーションの最小限の部分を見てみましょう。これはコントローラのアクションです。そして、アクションの中には何もなくても大丈夫で、自動的にビューをレンダリングします。設定より規約が優先の影で簡潔性のことは、Railsが大好きの理由の一つです。
 
 Let's take a look at minimal piece of a Ruby on Rails application. It is a controller action, and sometimes it can be absolutely empty, rendering some view template automatically. That's one of the reason why we love Ruby on Rails: its conciseness.
 -->
@@ -322,9 +324,9 @@ It can be compared to a kernel and user space in an operating system.
 
 <!--
 
-ですので、それにRubyもRailsも開発者の生産性を重視していることで、ほとんどの場合、特に単純なアクションの場合、アプリのコードよりもはるかに多くのフレームワークコードが実行されるという状況が発生します。
+ですので、RubyもRailsも開発者の生産性を重視していることで、ほとんどの場合、特に単純なアクションの場合、アプリのコードよりもはるかに多くのフレームワークコードが実行されるという状況が発生します。
 
-これは、オペレーティング システムのカーネルとユーザー空間によく似ています。 カーネルコードはリソースを管理し、実装の詳細を隠すため、ユーザー空間プログラムはsyscallを呼び出すだけでよく、実装方法は気にしません。
+これは、オペレーティング システムのカーネルとユーザー空間によく似ているとおもいます。 カーネルコードはリソースを管理し、実装の詳細を隠すため、ユーザー空間プログラムはsyscallを呼び出すだけでよく、実装詳細は知らなくてもいいです。
 
 And this, and also the focus of both Ruby and Rails on developer productivity, leads to a situation when in most cases, especially for simpler actions, there is a lot more framework code executed than your code.
 
@@ -346,7 +348,7 @@ It is very much like a kernel and user space in an operating system. Kernel code
 
 <!--
 
-Railsはあなたのために多くの仕事をしてくれます。 私たちが当たり前だと思っていることがたくさんあります。 たとえば、開発時のコードの自動再読み込みや、暗黙的なデータベース接続管理などのさまざま退屈なことです。
+Railsはあなたのために多くの作業をしてくれます。 私たちが当たり前だと思っていることがたくさんあります。 たとえば、開発時のコードの自動再読み込みや、暗黙的なデータベース接続管理などのさまざまなことです。
 
 And Rails does a lot of work for you. There is a lot of things that we take for granted. For example, automatic code reloading in development. Or implicit database connection management. Or caches cleanup. And so on.
 
@@ -368,7 +370,7 @@ So only the application code need to be reloaded.
 
 <!--
 
-開発者の生産性にとって主なことは、もちろん、開発中に変更されたコードの自動的な再読み込みのこと、再リロードです。高速である必要があります。そうしないと、開発者のエクスペリエンスが低下します。 また、フレームワークとジェムのコードが多数あるため、変更のたびにアプリケーション全体をリロードすることは受け入れられません。したがって、アプリケーションのコードのみをリロードする必要があります。
+開発者の生産性にとって主なことは、もちろん、開発中に変更されたコードの自動的な再読み込みのこと、再リロードです。高速である必要があります。そうしないと、開発者のエクスペリエンスが悪化します。 また、フレームワークとジェムのコードが多数実行されているため、たまに変更していないです。アプリのコードの変更のたびにアプリケーション全体をリロードすることは受け入れられないほど遅いです。したがって、アプリケーションのコードのみをリロードする必要があります。
 
 Main thing for developer productivity is, of course, automatic reloading of changed code in development. It should be fast or developer experience will be bad. And as there is a lot of framework and gem code, it is not a good idea to reload the whole application on every change. So only application code, your code, need to be reloaded.
 
@@ -392,7 +394,7 @@ end
 ```
 
 <!--
-次に重要なことはリソース管理です。 接続プールやキャッシュのクリーンアップなどを気にする必要はありません。コードを記述するだけで機能します。
+次に重要なことはリソース管理です。 Railsのアプリでは接続プールやキャッシュのクリーンアップなどを気にする必要はありません。コンネークションがあるかどうがのことを知らなくても、アプリは動きますよ。
 
 Second most important thing is resource management. We don't have to care about connection pools, cleaning up caches, etc. We just write our code and it works.
 -->
@@ -418,7 +420,7 @@ end
 (Thanks to all possible gods we don't have to!)
 
 <!--
-もしかしたら、これを手動で行う必要があったら、次のようになります。非常に冗長で面倒で、生産性もなくなると思います。
+もしかしたら、これを手動で行う必要があったら、次のようになります。非常に長くて、面倒で、生産性もなくなると思います。
 -->
 
 ---
@@ -435,7 +437,7 @@ And that's why there is Rails Executor.
 
 <!--
 
-アプリケーションを開発するなら、これについて知る必要さえありません。ただRailsを使用して、楽しんでください！
+皆さんはアプリケーションを開発するなら、これについて知る必要さえありません。ただRailsを使用して、楽しんでください！
 
 What is best part of this? If all you do is writing application code, you don't even need to know about this! Just use Rails.
 -->
@@ -460,9 +462,9 @@ end
 <!--
 ただし、アプリケーションコードを呼び出すジェムを作成したいとき、知る必要になります。
 
-もし、あなたの作成したジェムが、アプリからのコールバックを受け、保存して、いつか呼び出すようなものであれば、呼び出す前後にリソース管理を行わないと、厄介なバグの発生するおそれがあります。
+もし、あなたの作成したジェムが、アプリからのコールバックを受け、保存して、いつか呼び出すようなものであれば、呼び出す前後にリソース管理を行わないと、やばいバグが発生するおそれがあります。
 
-また、使っているツールの内部詳細を知ることは良いことですよね。これは、プロフェッショナルとして成長しに役くに立ちます。サードパーティのgemの問題をデバッグするにも役に立ちます。
+また、使っているツールの内部の実装詳細を知ることは良いことですよね。プロフェッショナルとして成長しに役くに立つと思います。サードパーティのgemの問題をデバッグするにも役に立ちます。
 
 However, when you want to step out of comfort zone of application code and write a library for your application, a gem that will provide an API that accepts a callback with application code and eventually calls it. Now you'd better know about how to do it properly to avoid tricky bugs from happening.
 
@@ -485,7 +487,7 @@ Also, it is a good thing to know internal details of tools you are using. It wil
 
 
 <!--
-また、アプリケーションコードを呼び出すジェムの種類も数も多くあります。 バックグラウンド・ジョブ、cron ジョブ、メッセージング、などなど。
+また、アプリケーションコードを呼び出すジェムの種類も数も驚くほどたくさんあります。 バックグラウンド・ジョブ、cron ジョブ、メッセージング、などなど。
 
 And there is a lot of kinds of gems that may need to call application code. Background jobs, cron jobs, instrumentation, messaging.
 -->
@@ -540,13 +542,13 @@ Read more: [guides.rubyonrails.org/threading_and_code_execution.html](https://gu
 
 <!--
 
-Rails Executorは「仕事の単位」を受けます。コントローラーのアクションもバックグラウンドジョブも全ては「仕事の単位」になります。アプリケーションコードのコールバックという意味です。
+Rails Executorは「Unit of work」を受けています。コントローラーのアクションもバックグラウンドジョブも全ては「Unit of work」の例です。アプリケーションコードで作ったコールバックという意味です。この用語を日本語にどのように翻訳したらいいかと悩んでいますが、アフターパーティーでビールを飲みながら、ブレインストーミングしてみませんか。今は「作業単位」という翻訳を使います。
 
-このコールバックを実行する前に、Executorはto_runという自分のコールバックを実行してから、アプリケーションコードを呼び出して、その後にto_completeというコールバックを実行します。以上です、こんな簡単なものです。
+このコールバックを実行する前に、Executorはto_runという自分のコールバックを実行してから、アプリケーションコードを呼び出して、その後to_completeというコールバックを実行します。以上です、こんな簡単なものです。
 
-Executorに包まれたコードはもう一回Executorに包んでもかまいません、安全です。
+それに、Executorに包まれたコードはもう一回Executorに包んでもかまいません、安全です。
 
-ただし、Executorはリソース管理を行いますが、コードの再読み込みは行いません。
+ただし、Executorはリソース管理のみを行います、コードの再読み込みは行いません。
 
 Rails Executor wraps _unit of work_ of an application: it can be controller action, background job, whatever. It defines callbacks `to_run` and `to_complete` that are called before and after enclosed block. That's it, that simple.
 
@@ -586,7 +588,7 @@ Read more: [guides.rubyonrails.org/threading_and_code_execution.html](https://gu
 
 <!--
 
-Executorとともに、Rails Reloaderもあります。これは、Executorをラップして、アプリケーションコードを実行する前に、最新のコードが読み込まれているかを確実します。
+Executorとともに、Rails Reloaderという別のものもあります。ReloaderはExecutorをラップして、アプリケーションコードを実行する前に、最新のコードが読み込まれているかを確実します。
 
 長時間実行されるプロセスでは、リソース管理だけでなくコードの再読み込みも行うために、ExecutorではなくReloaderを使用されるべきです。
 
@@ -612,7 +614,7 @@ end
 And that's it!{class="text-2xl"}
 
 <!--
-ジェムコードからアプリケーションコードを呼び出すとき、リソース管理とコードの再読み込みを行うには必要なのは、「仕事の単位」の呼び出しを「Rails.application.reloader.wrap」で包むだけです。簡単じゃないですか？
+ジェムコードからアプリケーションコードを呼び出すとき、リソース管理とコードの再読み込みを行うには必要なのは、「作業単位」の呼び出しところを「Rails.application.reloader.wrap」に包むだけです。簡単じゃないですか？
 
 To just call application code from your gem code to get resource management and code reloading, all you need is to wrap the call to a unit of work in `Rails.application.reloader.wrap` and that's it! Isn't it easy?
 -->
@@ -636,7 +638,7 @@ end
 ```
 
 <!--
-「仕事の単位」の前後にリソースを管理したい場合は、アプリケーションの Executorのインスタンスに `to_run` および `to_complete` コールバックを登録してください。
+「作業単位」の前後にリソースを管理したい場合は、アプリケーションの Executorのインスタンスに `to_run` および `to_complete`のコールバックを登録してください。スライドで表示している通りです。
 
 If you want to do manage some resources before or after a unit of work, you can register `to_run` and `to_complete` callbacks on the application Executor instance.
 -->
@@ -671,7 +673,7 @@ layout: statement
 
 <!--
 
-前に述べた多くの、実際にはほとんどのジェムがアプリケーションコードを呼び出すためにRails Executorを使用していることを意味します。 これは、長時間実行されるプロセスが確実に動作するための前提条件です。
+前に述べたジェムはほとんど全部既にRails Executorを使用していることを意味します。 これは、長時間実行されるプロセスが確実に動作するための前提条件です。
 
 And it means that many, actually most of the gems I listed before are using Rails Executor/Reloader to call application code. It is a precondition for reliable work of long running processes.
 
@@ -734,9 +736,9 @@ See [`lib/action_policy/railtie.rb:59`](https://github.com/palkan/action_policy/
 <qr-code url="https://github.com/palkan/action_policy/blob/8204e9b82f2767728dce69fccb5c4b2088c532ec/lib/action_policy/railtie.rb#L59-L62" caption="action_policy/railtie.rb:59" class="w-42 absolute bottom-10px right-10px" />
 
 <!--
-現実のジェムはRails Executorをどのように使用しているかを見てみましょう。
+現実のジェムはRails Executorをどのように使用している例を見てみましょう。
 
-例えば、マーシャンズのジェムの一つ、ActionPolicyです。認可ルールをスレッドごとにキャッシュして、認可チェックを高速化します。ルールの結果が古くならないように、キャッシュをクリーンアップをRails Executorのコールバックとしてを登録します。
+例えば、火星のジェムの一つ、ActionPolicyです。認可ルールをスレッドごとにキャッシュして、認可チェックを高速化します。ルールの結果が古くならないように、キャッシュをクリーンアップをRails Executorのコールバックとしてを登録します。
 
 Let's see how real world gems are using Rails Executor.
 
@@ -770,7 +772,7 @@ See [anycable-rails pull request № 189](https://github.com/anycable/anycable-r
 <qr-code url="https://github.com/anycable/anycable-rails/pull/189" caption="anycable-rails pull request № 189" class="w-42 absolute bottom-10px right-10px" />
 
 <!--
-より高度な例:最新のAnyCableでは、自動メッセージ バッチ処理。 リクエスト中またはバックグラウンド・ジョブ中に送信されたメッセージは、クライアントにすぐに送信されるのではなく、すべて蓄積され、仕事の単位の実行が完了した後に送信されます。これにより、性能も向上し、メッセージの順序が保証されます。
+より高度な例:最新のAnyCableでは、自動メッセージ バッチ処理が追加されました。リクエスト中またはバックグラウンド・ジョブ中に送信されたメッセージは、クライアントにすぐ送信されるのではなく、すべて集まって、作業単位の実行が完了した後に送信されます。これにより、性能も上がったりし、メッセージの順序が保証されます。
 
 Less typical example: automatic message batching in newer versions of AnyCable. All messages sent during request or background job aren't sent to clients immediately, but instead accumulated and sent only after unit of work was completed its execution. It allows to increase throughput and guarantee order of messages.
 -->
@@ -797,7 +799,7 @@ See [view_component pull request № 1147](https://github.com/ViewComponent/view
 <qr-code url="https://github.com/ViewComponent/view_component/pull/1147" caption="view_component pull request № 1147" class="w-42 absolute bottom-10px right-10px" />
 
 <!--
-Reloaderの例として、ViewComponentのプレビュー機能を見てみましょう。Reloaderのコールバックを使って、開発環境では、ビューコンポーネントの使用方法のドキュメントを自動的に更新します。Developer Experienceの向上です。
+Reloaderの例として、ViewComponentのプレビュー機能を見てみましょう。Reloaderのコールバックを使って、開発環境では、ビューコンポーネントの使用方法のドキュメントを自動的に更新します。Developer Experienceの改善です。
 -->
 
 ---
@@ -809,7 +811,7 @@ layout: statement
 Not all gems are integrated with Rails Executor/Reloader yet.
 
 <!--
-あいにく、まだすべてのジェムがRails Executorと統合されていません。しかし、あなたは助けることが出きるようになりました！　今、自分の経験について話したいと思います。
+あいにく、すべてのジェムはまだRails Executorと統合されていません。しかし、ただ今、Executorの知識をもって、あなたは助けることが出きるようになりました！
 -->
 
 ---
@@ -832,9 +834,11 @@ end
 Nice to have automatic code reloading!
 
 <!--
+最後に自分の経験について話したいと思います。
+
 ある日、NATSというメッセージングシステムのRubyクライアントを使っていました。
 
-NATSは各サブスクリプションを作って、メッセージが届いたら、アプリからのコールバックを実行します。問題は、Executorを使いませんでした。そのため、データベースの接続が漏れて、切れてしまうというバグも可能ですし、コードの再読み込みも行いません。
+NATSは各サブスクリプションを作って、メッセージが届いたら、アプリからのコールバックを実行します。問題は、Executorを使いませんでした。そのため、データベースの接続が漏れて、切れてしまうというバグも可能でしたし、コードの再読み込みも行いませんでした。
 -->
 
 ---
@@ -872,7 +876,7 @@ See [nats-pure.rb pull request № 120](https://github.com/nats-io/nats-pure.rb/
 <qr-code url="https://github.com/nats-io/nats-pure.rb/pull/120" caption="nats-pure.rb pull request № 120" class="w-42 absolute bottom-10px right-10px" />
 
 <!--
-ですので、コールバックをRails Executorでラップしました。Sidekiqの実装を参考にして、フレームワークに依存しない「リローダー」も追加して、Railsのアプリでも、Railsのないアプリでも使えるようになりました。
+ですので、コールバックをRails Executorでラップしました。Sidekiqの実装を参考にして、フレームワークに依存しない「リローダー」も追加して、Railsのアプリでも、Railsのないアプリでも使えるようになりました。こんな簡単です。
 
 So I wrapped callback in Rails Executor. And to allow NATS client to be used outside of Rails, there is framework-agnostic “reloader” (I took it from Sidekiq implementation).
 -->
@@ -899,7 +903,7 @@ See you at Izumo Ruby meet-up on 2023-11-11!
 <qr-code url="https://evilmartians.com/events/kujira-ni-notta-ruby-izumorb" caption="Izumo Ruby meet-up talk announce" class="w-42 absolute bottom-10px right-10px" />
 
 <!--
-あと小さなアナウンスだけが残っています。私の次のトークは、二週間後、島根県出雲市の新しいミートアップイベントです。松江市に開催されるRubyWorldカンファレンスのすぐ直後です。RubyWorldの参加者の皆さん、ぜひ島根県にもう少し泊まって、出雲市に来て、新しい出雲Rubyミートアップイベントに参加してください。Martians流DockerとRailsの開発環境について話します。
+あと小さなアナウンスだけが残っています。私は二週間後、島根県出雲市の新しいミートアップイベントで発表します。松江市に開催されるRubyWorldカンファレンスのすぐ直後です。RubyWorldの参加者の皆さん、ぜひ島根県にもう少し泊まって、出雲市に来て、新しい出雲Rubyミートアップイベントに参加してください。トークの話題は火星流DockerとRailsの開発環境について話します。
 
 My next talk will be right after RubyWorld conference in Shimane. RubyWorld attendees, I invite you to stay in Shimane for a little bit longer and come to Izumo city to attend a brand new meetup event. I will talk about martian way of using Docker for local development environment of Rails applications.
 -->
@@ -958,8 +962,9 @@ Our awesome blog: [evilmartians.com/chronicles](https://evilmartians.com/chronic
 
 <!--
 
-最後までご視聴してくださって、ありがとうございました！
+皆さん、最後までご視聴してくださって、ありがとうございました！
 
-我が社のブログでは、Rubyについての記事がたくさんありますので、ぜひお読みください！日本語の翻訳もあります。
+我が社のブログでは、RubyとRailsについての記事がたくさんありますので、ぜひお読みください！日本語の翻訳もあります。
 
+以上です。
 -->
