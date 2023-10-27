@@ -22,7 +22,7 @@ fonts:
 aspectRatio: '16/9'
 
 transition: slide-left
-title: Threads, callbacks, and execution context in Ruby
+title: "Rails Executor: the border between application and framework code"
 mdc: true
 ---
 
@@ -122,7 +122,7 @@ I'm Andrey, back-end engineer at Evil Martians. I and my family are living in Ja
 
 我々は開発者ツールのスタートアップと協力して、それらのスタートアップをユニコーンに変え、素晴らしいオープンソースプロジェクトも開発します。いろいろなスタートアップや大企業にコンサルティングもしています。バックエンドをもちろん、フロントエンドやデザインも含めてプロダクトをターンキー開発しています。
 
-イービル・マーシャンズは元々に Ruby on Railsに集中する開発ショップとして知られてきましたが、今はそれをはるかに超えています。
+イービル・マーシャンズは元々からRuby on Railsに集中する開発ショップとして知られてきましたが、今はそれをはるかに超えています。
 
 Also I'm not only an alien, but also a martian. We came to Earth in peace.
 
@@ -200,9 +200,7 @@ Evil Martians is a team of senior developers and designers who know the industry
 </style>
 
 <!--
-それに、我々はオープンソースの大ファンなので、できる限りオープンソースソフトウェアを使ったり、貢献したり、そしてよく自分のライブラリやプロダクトを作って維持しています。このスライドでは一番有名なものですが、今は火星で作ったオープンソースプロジェクトが数十のものが存在しています。どうぞ自由に使ってください。
-
-そして、多分、皆さんのアプリでは我々が作ったジェムはいくつかあるとおもいます。
+それに、我々はオープンソースの大ファンなので、できる限りオープンソースソフトウェアを使ったり、貢献したり、そしてよく自分のライブラリやプロダクトを作って維持しています。このスライドでは一番有名なものですが、今は火星で作ったオープンソースプロジェクトが百以上のものが存在しています。多分、皆さんのアプリでは我々が作ったジェムはいくつかあると思います。
 
 One of our pillars is open source. We use open source products, and we create our own. And most probably there is a gem or two in your application Gemfile as well! Here is just a small part of our open source projects, but you can find much more at our website.
 -->
@@ -265,7 +263,7 @@ end
 
 <!--
 
-Rails アプリケーションの最小限の部分を見てみましょう。これはコントローラのアクションです。そして、アクションの中には何もなくても大丈夫で、自動的にビューをレンダリングします。設定より規約が優先の影で簡潔性のことは、Railsが大好きの理由の一つです。
+Rails アプリケーションのもっとも小さい部分を見てみましょう。これはコントローラのアクションです。そして、アクションの中には何もなくても大丈夫で、自動的にビューをレンダリングします。設定より規約が優先の影で簡潔性のことは、Railsが大好きの理由の一つです。
 
 Let's take a look at minimal piece of a Ruby on Rails application. It is a controller action, and sometimes it can be absolutely empty, rendering some view template automatically. That's one of the reason why we love Ruby on Rails: its conciseness.
 -->
@@ -437,7 +435,7 @@ And that's why there is Rails Executor.
 
 <!--
 
-皆さんはアプリケーションを開発するなら、これについて知る必要さえありません。ただRailsを使用して、楽しんでください！
+皆さんはアプリケーションを開発するなら、これについて知る必要さえもありません。ただRailsを使って、楽しんでください！
 
 What is best part of this? If all you do is writing application code, you don't even need to know about this! Just use Rails.
 -->
@@ -462,9 +460,9 @@ end
 <!--
 ただし、アプリケーションコードを呼び出すジェムを作成したいとき、知る必要になります。
 
-もし、あなたの作成したジェムが、アプリからのコールバックを受け、保存して、いつか呼び出すようなものであれば、呼び出す前後にリソース管理を行わないと、やばいバグが発生するおそれがあります。
+もし、あなたのジェムが、アプリからのコールバックを受け、保存して、いつか呼び出すようなものであれば、呼び出す前後にリソース管理を行わないと、やばいバグが発生するおそれがあります。
 
-また、使っているツールの内部の実装詳細を知ることは良いことですよね。プロフェッショナルとして成長しに役くに立つと思います。サードパーティのgemの問題をデバッグするにも役に立ちます。
+また、使っているツールの内部の実装詳細を知ることは良いことだと思います。プロフェッショナルとして成長しに役くに立つと思います。サードパーティのgemの問題をデバッグするにも役に立ちます。
 
 However, when you want to step out of comfort zone of application code and write a library for your application, a gem that will provide an API that accepts a callback with application code and eventually calls it. Now you'd better know about how to do it properly to avoid tricky bugs from happening.
 
@@ -542,13 +540,13 @@ Read more: [guides.rubyonrails.org/threading_and_code_execution.html](https://gu
 
 <!--
 
-Rails Executorは「Unit of work」を受けています。コントローラーのアクションもバックグラウンドジョブも全ては「Unit of work」の例です。アプリケーションコードで作ったコールバックという意味です。この用語を日本語にどのように翻訳したらいいかと悩んでいますが、アフターパーティーでビールを飲みながら、ブレインストーミングしてみませんか。今は「作業単位」という翻訳を使います。
+Rails Executorは「Unit of work」を受けています。コントローラーのアクションもバックグラウンドジョブも全ては「Unit of work」または「作業単位」の例です。アプリケーションコードで作ったコールバックという意味です。
 
 このコールバックを実行する前に、Executorはto_runという自分のコールバックを実行してから、アプリケーションコードを呼び出して、その後to_completeというコールバックを実行します。以上です、こんな簡単なものです。
 
 それに、Executorに包まれたコードはもう一回Executorに包んでもかまいません、安全です。
 
-ただし、Executorはリソース管理のみを行います、コードの再読み込みは行いません。
+ただし、Executorはリソース管理のみを行っています、コードの再読み込みは行いません。
 
 Rails Executor wraps _unit of work_ of an application: it can be controller action, background job, whatever. It defines callbacks `to_run` and `to_complete` that are called before and after enclosed block. That's it, that simple.
 
@@ -590,7 +588,7 @@ Read more: [guides.rubyonrails.org/threading_and_code_execution.html](https://gu
 
 Executorとともに、Rails Reloaderという別のものもあります。ReloaderはExecutorをラップして、アプリケーションコードを実行する前に、最新のコードが読み込まれているかを確実します。
 
-長時間実行されるプロセスでは、リソース管理だけでなくコードの再読み込みも行うために、ExecutorではなくReloaderを使用されるべきです。
+長時間実行されるプロセスでは、リソース管理だけでなく、コードの再読み込みも行うために、ExecutorではなくReloaderを使用されるべきです。
 
 For that purpose there is a separate Rails Reloader which actually wraps Executor. It also reloads code before every unit of work.
 
@@ -673,7 +671,7 @@ layout: statement
 
 <!--
 
-前に述べたジェムはほとんど全部既にRails Executorを使用していることを意味します。 これは、長時間実行されるプロセスが確実に動作するための前提条件です。
+前に述べたジェムはほとんど全部既にRails Executorを使用していることです。 これは、長時間実行されるプロセスが確実に動作するための前提条件です。
 
 And it means that many, actually most of the gems I listed before are using Rails Executor/Reloader to call application code. It is a precondition for reliable work of long running processes.
 
@@ -701,7 +699,7 @@ See [RailsWorld 2023: Untangling cables & demystifying twisted transistors](http
 <!--
 もちろん、Rails 自体も Rails Executor を使用しています。 コントローラーのアクションもActiveJobもフレームワークのすべてのコンポーネントはアプリコードをExecutor軽油で呼び出します。 たとえば、ActionCableは、すべてのWebSocketのメッセージを処理する時は、チャンネルのアクションをExecutorにラップして呼び出します。
 
-Action Cable アーキテクチャに興味があったら、同僚の Vladimir Dementyev の今年のRailsWorldのトークをご覧ください。
+ActionCableのアーキテクチャに興味があったら、同僚の Vladimir Dementyev の今年のRailsWorldのトークをご覧ください。
 
 And of course Rails itself uses Rails Executor/Reloader too. For controller actions, for ActiveJob, for all components of the framework. For example, ActionCable wraps every incoming WebSocket connection into Rails Executor.
 
@@ -838,7 +836,7 @@ Nice to have automatic code reloading!
 
 ある日、NATSというメッセージングシステムのRubyクライアントを使っていました。
 
-NATSは各サブスクリプションを作って、メッセージが届いたら、アプリからのコールバックを実行します。問題は、Executorを使いませんでした。そのため、データベースの接続が漏れて、切れてしまうというバグも可能でしたし、コードの再読み込みも行いませんでした。
+NATSはサブスクリプションのメッセージが届いたら、アプリからのコールバックを実行します。問題は、Executorを使いませんでした。そのため、データベースの接続が漏れて、切れてしまうというバグも可能でしたし、コードの再読み込みも行いませんでした。
 -->
 
 ---
@@ -900,6 +898,8 @@ Come to Izumo, Shimane, Japan!
 
 See you at Izumo Ruby meet-up on 2023-11-11!
 
+Next day after RubyWorld conference finishes in Matsue.{class="text-sm"}
+
 <qr-code url="https://evilmartians.com/events/kujira-ni-notta-ruby-izumorb" caption="Izumo Ruby meet-up talk announce" class="w-42 absolute bottom-10px right-10px" />
 
 <!--
@@ -947,7 +947,9 @@ My next talk will be right after RubyWorld conference in Shimane. RubyWorld atte
 
 <div class="col-span-3">
 
-Our awesome blog: [evilmartians.com/chronicles](https://evilmartians.com/chronicles/?utm_source=kaigionrails&utm_medium=slides&utm_campaign=rails-executor)!
+Our awesome blog: [evilmartians.com/chronicles](https://evilmartians.com/chronicles/?utm_source=kaigionrails&utm_medium=slides&utm_campaign=rails-executor)!{class="text-lg"}
+
+[@hachi8833](https://twitter.com/hachi8833)さんが作ってくれた日本語の翻訳があります！
 
 <p class="text-sm">See these slides at <a href="https://envek.github.io/kaigionrails-rails-executor/">envek.github.io/kaigionrails-rails-executor</a></p>
 
