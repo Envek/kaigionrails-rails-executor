@@ -2,6 +2,13 @@
 theme: default
 highlighter: shiki
 lineNumbers: false
+title: "Rails Executor: the border between application and framework code"
+author: Andrey Novikov
+keywords:
+  - Ruby on Rails
+  - framework
+  - internals
+  - Rails Executor
 info: |
   # Rails Executor: the border between application and framework code
 
@@ -20,9 +27,9 @@ fonts:
   serif: Martian Grotesk
   mono: Martian Mono
 aspectRatio: '16/9'
+download: 'https://files.speakerdeck.com/presentations/5e1b46ac41ba4b21ac7e0e6abf98c2c3/Kaigi_on_Rails_2023_-_Rails_Executor.pdf'
 
 transition: slide-left
-title: "Rails Executor: the border between application and framework code"
 mdc: true
 ---
 
